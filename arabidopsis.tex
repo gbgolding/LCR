@@ -1,0 +1,1669 @@
+\documentclass[a4paper,12pt]{article}
+\usepackage[utf8]{inputenc}
+\usepackage[english]{babel}
+\usepackage{graphicx}
+\usepackage{multicol}
+\usepackage{float}
+\usepackage{caption}
+\usepackage{stfloats}
+\usepackage[margin=0.75in]{geometry}
+\usepackage{fancyhdr}
+\usepackage{notoccite}
+\usepackage{ifthen}
+\usepackage{tikz}
+\usepackage{pgfplots}
+\usepackage{pgfplotstable}
+\usepackage{xcolor,colortbl}%for changing cell colour
+\usepackage{setspace}
+\usepackage{xspace}
+\usepackage{titlesec}
+\usepackage{lineno}
+\usepackage{booktabs}
+\usetikzlibrary{arrows,shapes}
+% \usepackage[round]{natbib}
+%%%%%%%%%%%%%%%%
+% BIBLIOGRAPHY
+%%%%%%%%%%%%%%%%
+\usepackage[backend=bibtex, giveninits=true, doi=false, isbn=false, natbib=true, url=true, eprint=false, style=authoryear-comp, sorting=nyt, sortcites=ynt, maxcitenames=2, maxbibnames=10, minbibnames = 10, uniquename=false, uniquelist=false, dashed=false]{biblatex} % can change the maxbibnames to cut long author lists to specified length followed by et al., currently set to 99.
+
+%% bibliography for each chapter...
+\DeclareFieldFormat[article,inbook,incollection,inproceedings,patent,thesis,unpublished]{title}{#1\isdot} % removes quotes around title
+\renewbibmacro*{volume+number+eid}{%
+	\printfield{volume}%
+	%  \setunit*{\adddot}% DELETED
+	\printfield{number}%
+	\setunit{\space}%
+	\printfield{eid}}
+\DeclareFieldFormat[article]{number}{\mkbibparens{#1}}
+%\renewcommand*{\newunitpunct}{\space} % remove period after date, but I like it. 
+\renewbibmacro{in:}{\ifentrytype{article}{}{\printtext{\bibstring{in}\intitlepunct}}} % this remove the "In: Journal Name" from articles in the bibliography, which happens with the ynt 
+\renewbibmacro*{note+pages}{%
+	\printfield{note}%
+	\setunit{,\space}% could add punctuation here for after volume
+	\printfield{pages}%
+	\newunit}    
+\DefineBibliographyStrings{english}{% clears the pp from pages
+	page = {\ifbibliography{}{\adddot}},
+	pages = {\ifbibliography{}{\adddot}},
+} 
+\DeclareFieldFormat{journaltitle}{#1\isdot}
+\renewcommand*{\revsdnamepunct}{}%remove comma between last name and first name
+\DeclareNameAlias{sortname}{family-given}
+% \DeclareNameAlias{sortname}{last-first}
+\renewcommand*{\nameyeardelim}{\addspace} % remove comma in text between name and date
+\addbibresource{./arabidopsis.bib} % The filename of the bibliography
+\usepackage[autostyle=true]{csquotes} % Required to generate language-dependent quotes in the bibliography
+\renewrobustcmd*{\bibinitperiod}{}
+% you'll have to play with the citation styles to resemble the standard in your field, or just leave them as is here. 
+% or, if there is a bst file you like, just get rid of all this biblatex stuff and go back to bibtex. 
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+%
+% generally hyperref needs to be loaded last
+\usepackage[hidelinks,colorlinks=true,linkcolor=blue,citecolor=blue,urlcolor=blue]{hyperref}
+
+
+
+\definecolor{atomictangerine}{rgb}{1.0, 0.6, 0.4}
+\definecolor{darkbrown}{rgb}{1.0, 0.56, 0.24}
+\colorlet{darkcol}{black!30!white}
+\colorlet{lightcol}{black!10!white}
+\definecolor{txtcol}{HTML}{F40000}
+
+\setlength{\headheight}{14.5pt}
+\setlength{\columnsep}{20pt}
+\addtolength{\topmargin}{-2.5pt}
+\pgfplotsset{compat=1.18}
+% \bibliographystyle{unsrtnat}
+% \providecommand{\e}[1]{\ensuremath{\times 10^{#1}}}
+\newcommand{\arab}{\mbox{\textit{Arabidopsis\,thaliana}}\xspace}
+\newcommand{\ath}{\mbox{\textit{A.\,thaliana}}\xspace}
+\newcommand{\oryz}{\mbox{\textit{Oryza\,sativa}}\xspace}
+\newcommand{\osa}{\mbox{\textit{O.\,sativa}}\xspace}
+\newcommand{\homo}{\mbox{\textit{Homo\,sapiens}}\xspace}
+\newcommand{\hsa}{\mbox{\textit{H.\,sapiens}}\xspace}
+\newcommand{\tget}{\mbox{\texttt{TargetP}}\xspace}
+\renewcommand{\diamond}{\mbox{\texttt{Diamond}}\xspace}
+\newcommand{\blastp}{\mbox{\texttt{BlastP}}\xspace}
+\newcommand{\missing}{{\color{red}XXXXX}\xspace}
+
+% \setstretch{1.5}
+\titleformat{\section}{\large\bfseries}{\thesection}{1em}{}
+\titleformat{\subsection}{\normalsize\bfseries}{\thesubsection}{1em}{}
+\pagestyle{plain}
+% \sloppy
+\captionsetup{font=singlespacing}
+\singlespacing
+
+\lhead{Low complexity regions}
+\rhead{E Waye and GB Golding}
+
+\graphicspath{{./figures/}}
+%%% Definition of numbers
+\newcommand{\humanNucNumberBlastP}{19347\xspace}
+\newcommand{\humanNucNumberTarget}{20294\xspace}
+\newcommand{\humanNucNumberGenbnk}{16082\xspace}
+\newcommand{\humanNucMitoNoBlastP}{1289\xspace}
+\newcommand{\humanNucMitoNoTarget}{342\xspace}
+\newcommand{\humanNucMitoNoGenbnk}{1115\xspace}
+\newcommand{\humanNucChloNo}{0} % not applicable and ignored
+\newcommand{\humanMitoNo}{13\xspace}
+%
+\newcommand{\arabNucNumberBlastP}{22052\xspace}
+\newcommand{\arabNucNumberTarget}{25941\xspace}
+\newcommand{\arabNucNumberGenbnk}{5554\xspace}
+\newcommand{\arabNucMitoNoBlastP}{2640\xspace}
+\newcommand{\arabNucMitoNoTarget}{573\xspace}
+\newcommand{\arabNucMitoNoGenbnk}{814\xspace}
+\newcommand{\arabNucChloNoBlastP}{2591\xspace}
+\newcommand{\arabNucChloNoTarget}{769\xspace}
+\newcommand{\arabNucChloNoGenbnk}{3455\xspace}
+\newcommand{\arabMitoNo}{114\xspace}
+\newcommand{\arabChloNo}{80\xspace} 
+%
+\newcommand{\oryzNucNumberBlastP}{37953\xspace}
+\newcommand{\oryzNucNumberTarget}{42195\xspace}
+\newcommand{\oryzNucNumberGenbnk}{9618\xspace}
+\newcommand{\oryzNucMitoNoBlastP}{2995\xspace}
+\newcommand{\oryzNucMitoNoTarget}{374\xspace}
+\newcommand{\oryzNucMitoNoGenbnk}{369\xspace}
+\newcommand{\oryzNucChloNoBlastP}{2581\xspace}
+\newcommand{\oryzNucChloNoTarget}{960\xspace}
+\newcommand{\oryzNucChloNoGenbnk}{608\xspace}
+\newcommand{\oryzMitoNo}{60\xspace}
+\newcommand{\oryzChloNo}{83\xspace} 
+%
+\begin{document}
+\title{ Nuclear proteins of organellar origin 
+have resisted the evolutionary accumulation of low-complexity
+regions}
+\author{\sc Elisabeth Waye and G. Brian Golding$^*$\\ \footnotesize McMaster University}
+\date{\footnotesize \today}
+\maketitle
+\begin{center}\vspace*{-5mm}\parbox[c]{14cm}{
+    \raggedright\footnotesize\noindent * Author for correspondence:
+    G. Brian Golding, Department of Biology, McMaster University,
+    Hamilton, ON, Canada, L8S 4K1. Email: golding@mcmaster.ca.
+}\end{center}
+\thispagestyle{empty}
+
+\begin{center}\vspace*{-5mm}\parbox[c]{15cm}{
+\section*{Abstract}\small
+It is well accepted that the mitochondrial and chloroplast organelles
+originated from bacterial endosymbionts billions of years ago. A large
+number of genes from these original endosymbionts are now encoded in the
+nucleus and then transported back to the organelles.  Most eukaryotic
+proteins contain low complexity regions (LCRs); regions of the proteins
+which contain an excess of only a few amino acids.  In contrast bacterial
+proteins generally have much fewer low complexity regions.  Here we have
+examined the proteins that were transferred to the nucleus to determine
+if they evolve in the same manner as `native' nuclear proteins including
+the acquisition of low-complexity regions (LCRs), or whether they remain
+compositionally more similar to their prokaryotic origins.  To detect
+which nuclear proteins were obtained via endosymbiotic gene donation
+from the chloroplast and mitochondria, we compared (1) the similarity of
+protein sequences to cyanobacterial and alpha-proteobacterial proteomes,
+(2) the predicted subcellular localizations from \tget-2.0, and (3)
+the predicted locations from the GenBank, UniProt, and EMBL annotations.
+All nuclear proteins were divided into groups determined by whether they
+were predicted to originate from the chloroplast, the mitochondria, or
+whether they are assumed otherwise to be native to the nucleus.  Here we
+show that the genes that were transferred from the bacterial endosymbionts
+have not accumulated LCRs to the same extent despite their presence in
+the nucleus.  These findings suggest that the selective pressures which
+potentially favour the acquisition of LCRs in the nucleus are weaker or
+absent for these proteins.\\[4mm] }\end{center}
+
+\pagestyle{fancy}
+\begin{multicols}{2}
+\section*{Introduction}
+
+Low complexity regions (LCRs) are stretches of DNA or protein
+sequences often represented as repeated regions of nucleotides, and
+are characterized as having low entropy and low information content.
+These regions have been experimentally found to be involved in protein
+function and to exacerbate a number of diseases. Low complexity regions
+are often intrinsically disordered \citep{Rome:01,Dosz:06}, which
+allows for greater access to protein domains, increased flexibility
+and plasticity in a protein, contributing to protein-protein
+interactions \citep{EnrightEtAl2023}.  LCRs can also rapidly expand
+and contract via both replication slippage \citep{Hunt:06} and unequal
+crossing over \citep{DePr:06}. These indels can be pathological,
+with LCRs being associated with several neurodegenerative diseases
+\citep{Cumm:00,Day:05,Vers:05,Muso:09}.  The lack of structure
+lends itself to another property of promiscuity. Many LCR containing
+proteins are not limited to specific binding partners \citep{Dosz:06,
+Cole:10, Ekma:06, Fomi:21}.  The mutational instabilities and
+flexible binding give them uses on both evolutionary and physiological
+timescales. They often play roles in the hubs of interaction networks
+\citep{Dosz:06}; participate in transient non-membrane bound organelles
+\citep{Kede:02,Kato:17,Fomi:21}; and can also serve as the raw materials
+on which evolution can act \citep{Rado:15,Pers:23}.  In addition,
+LCRs are involved in the evolution and functional differentiation of
+proteins, and form secondary structures which contribute to the formation
+of protein configurations which help to specify the protein's function
+\citep{Pers:23}.
+
+LCRs in eukaryotes therefore fill a variety of important functions. And
+yet LCRs are comparatively rare in prokaryotes with eukaryotes having
+significantly more and longer LCRs \citep{BasileEtAl2019}.  It is
+therefore interesting to look at the presence of LCRs in proteins which
+originated from bacterial ancestors but have now been integrated
+into the nuclear genome of eukaryotic species.
+
+Endosymbiosis is the present theory explaining the origin of chloroplasts
+and mitochondria. Mitochondria are believed to have originated from
+an endosymbiotic event between an asgard-related archaeal host cell
+and a symbiotic alpha-proteobacterium over one to two billion years ago
+\citep{Mart:15, Step:21,Sant:25, Brav:25}. Similarly, hundreds of millions
+of year later, chloroplasts arose from an endosymbiotic event between
+a eukaryote and a photosynthetic cyanobacterium \citep{Mart:15,Bock:17}.
+
+It is believed that the primary endosymbiotic event catalyzed the evolution of
+splicesomal introns in eukaryotic genomes, and gave rise to
+the establishment of the eukaryotic cell itself \citep{Ahma:10}. While
+bacteria do not contain splicesomal introns, they do have
+self-splicing introns which were assumed to evolve into
+splicesomal introns following their engulfment by the host cell \citep{Ahma:10}.
+The introduction of introns into the ancestral cell
+following the primary endosymbiotic event has been hypothesized to be the
+catalyst for the formation of the eukaryotic cell \citep{Mart:15}.
+
+
+Following the endosymbiotic events which gave rise to the establishment
+of the organelles, massive gene transfer occurred unidirectionally
+from the organelles to the nucleus, resulting in major reduction of
+the chloroplast and mitochondrial genomes through a process commonly
+referred to as endosymbiotic gene transfer (EGT) \citep{TimmisEtAl2004}.
+While the mitochondria and chloroplasts have their own small genomes,
+the majority of their original genes have been transferred to the
+host's nucleus as NUMTs (nuclear mitochondrial DNA sequences) and NUPTs
+(nuclear plastid DNA sequences; \cite{TimmisEtAl2004}).  This transfer is
+ongoing and today, repeatedly results in non-coding nuclear pseudogenes.
+Thus, we can identify ongoing and recent transfer events by detecting
+genes that are still present in an organelle genome but that are also
+present in the nucleus of the same cell \citep{Martin2003}.  Genes
+transferred to the nucleus can then acquire introns.  Interestingly,
+splicesomal intron densities in chloroplast-derived genes (obtained
+through EGT) in the nucleus are similar to that of ancestral eukaryotic
+genes, suggesting a massive intron invasion occurred after transfer
+\citep{Basu:08}. In contrast, a study conducted on \textit{Entamoeba
+histolytica} demonstrated that no intron gain occurred in proteins
+acquired through lateral gene transfer from prokaryotes, even over a
+period of 50 million years \citep{Roy:06}.
+
+
+To identify ancient transfer events, studies focus on identifying
+nuclear genes which are no longer present in the organelle of the
+same cell; this is more difficult. Timmis and colleagues searched for
+\textit{Arabidopsis thaliana} nuclear genes which phylogenetically branch
+with homologous cyanobacterial genes. They found that 18\% (1700 of 9368)
+of sufficiently conserved \textit{Arabidopsis} proteins originate from
+cyanobacteria \citep{MartinEtAl2002}. Martin and colleagues also used the
+program \tget \citep{Eman:00} to investigate how protein
+compartmentalization and gene origin correspond. \tget is a program
+used to predict protein localization based on the presence of targeting
+peptides \citep{MartinEtAl2002}. Nuclear proteins which have originated
+from the organelles often contain transit peptide sequences located
+at their N-terminal in order to transport these genes back to their
+respective organelles \citep{LeeEtAl2008}. \citet{MartinEtAl2002} found
+that there was not a clear correspondence between compartmentalization
+and origin, as less than 50\% of the genes predicted to have originated
+from cyanobacteria were targeted back to the chloroplast. So the products of genes
+obtained through EGT are free to explore a multitude of
+other adaptive possibilities \citep{Martin2010}. However,
+the version of \tget used in this 2002 study has been updated to
+improve its accuracy, so that percentage could be inaccurate \citep{ArmenterosEtAl2019}. It is unclear how
+the transit peptide originated and evolved but it is known that they are
+very diverse \citep{LeeEtAl2008}. They suggest that transit peptides have
+specific sequence motifs which direct the transport of proteins
+to the organelles, and have predicted a cleavage site is located in the
+N-terminal region of the peptide \citep{LeeEtAl2008}.
+
+The purpose of this study is to investigate the evolution of LCRs in
+organelle proteins and in nuclear encoded proteins which originated from
+the organelles.  Since LCRs tend to be rare in bacteria and since the
+organelles originated from bacteria one might expect their proteins to
+avoid LCRs.  Within organelles such as human mitochondria this appears
+to be the case.  But the human mitochondria has a small, tight genome
+of only 17 thousand base pairs and LCRs are created by mechanisms that
+often increase the length of protein coding sequences and increase the
+length DNA regions with repetitive subsequences.  In contrast plant
+mitochondria and chloroplasts have large genomes that contain enough
+DNA to code for many more proteins. Hence genome size would not be a
+barrier to the accumulation of low complexity repeats.  Since LCRs in
+proteins have evolved many essential functions and since these proteins
+are encoded in the nucleus, one might expect these proteins to have
+accumulated LCRs just as any other nuclear encoded protein. Within the
+nucleus they are copied by and error corrected by the same machinery
+as other nuclear genes. We thus might expect to see that proteins,
+predicted to have originated from endosymbiotic gene transfer over
+hundreds of millions of years ago, to be similar to native nuclear
+proteins and possibly diversified their functional repertoire with the
+addition of LCRs. Unexpectedly, we demonstrate that many of the nuclear
+proteins targeted back to the mitochondria have resisted the selective
+pressures which maintain LCRs in the native nuclear genes.
+
+
+
+\section*{Results}
+
+\subsection*{Categorization of Proteins using \diamond}
+
+To compare LCR content in native nuclear proteins versus organellar
+proteins we first have to determine the nuclear proteins that
+function in the organelles.  However, the later are not well known
+and so we used three different methods to determine which nuclear proteins
+might have originated from the ancestral of mitochondria and
+chloroplasts.  Each of the three methods give qualitatively similar
+answers with regard to their LCR content.
+
+The first method used \diamond BLASTP to search for similarity between
+proteins from the nuclear proteomes of \homo, \arab, and \oryz against all
+reference cyano\-bacterial proteomes in UniProtKB (n=224), all reference
+alpha-proteobacterial proteomes (n=1505), six other prokaryotic reference
+proteomes (five bacteria and one archaea), and yeast. The best hit
+corresponding to each of the nuclear proteins from \hsa, \ath, and \osa
+were extracted from the BLASTP searches.  Proteins which did not hit to
+anything with an e-value less than $10^{-10}$ are indicated by ``no hit''
+in the Supplementary tables 1, 2, 3 \missing.  
+
+Proteins whose best hit was to a cyano\-bacterial protein with an e-value
+less than $10^{-10}$ yielded 0 nuclear \hsa proteins, \arabNucChloNoBlastP
+nuclear \ath proteins and \oryzNucChloNoBlastP nuclear \osa proteins; each
+with high sequence similarity to cyanobacterial proteins. These proteins
+were assumed to have originated from a cyanobacteria endosymbiont and
+moved to the nucleus through endosymbiotic gene transfer (EGT). Similarly,
+every protein whose best hit was to an alpha-proteobacterial protein
+with an e-value less than $10^{-10}$ yielded \humanNucMitoNoBlastP
+nuclear \hsa proteins, \arabNucMitoNoBlastP nuclear \ath proteins, and
+\oryzNucMitoNoBlastP nuclear \osa proteins. These proteins were assumed
+to have originated from the mitochondrial endosymbiont and transferred
+to the nucleus through EGT. The remaining proteins, \humanNucNumberBlastP
+\hsa, \arabNucNumberBlastP \ath, and \oryzNucNumberBlastP \osa proteins
+which did not have very similar hits to either alpha-proteobacterial or
+cyanobacterial proteins were considered `native nuclear' proteins.
+
+\textbf{Low Complexity Regions:}
+Every protein in these three categories was searched for low complexity
+regions.  This was done using the algorithm \texttt{Seg} to find local
+regions of low entropy. An in-house python script was used to calculate
+the proportion of LCRs in each sequence (appended to Supplementary tables
+1-3 \missing). For each type of protein from the BLASTP categorization,
+the fraction of proteins which contain low-complexity regions is shown
+in Table~\ref{tab:blastp}.  In addition, the mean percent LCR for each
+protein is shown along with their standard deviation (SD) about the
+mean (Table~\ref{tab:blastp}).  This table indicates that the nuclear
+encoded proteins with little homology to either the cyanobacterial
+or alpha-proteobacterial proteomes have the most proteins with LCRs
+for each species (approximately \hsa 24\%, \ath 17\%, \osa 30\%) and the
+largest proportions of LCRs within each protein (1.9\%, 1.6\%, 4.0\%).
+Proteins encoded in the mitochondria and chloroplast have very small
+fractions of proteins with LCRs and those LCRs that are present make up
+a very small proportion of the proteins.
+
+
+
+\begin{table*}
+    %%%% Have not used the number variables to ensure that the
+    %%%% number column matches the number variables.
+    \caption{Fraction of Proteins with LCRs using \diamond similarity}
+    \label{tab:blastp}
+    \centering
+    \begin{tabular}{lccr}
+	\toprule
+	Protein Type & Fraction Proteins & \multicolumn{1}{c}{Proportion LCR} & $n$ \\
+		     & with LCRs         & Mean $\pm$ StdErr &      \\
+	\midrule \multicolumn{2}{c}{\quad\quad\homo}        & & \\
+        Nuclear      & 0.2399 & 0.0194 $\pm$ 0.0000 & 19347 \\ % SD 0.0611
+        Nuclear-mt      & 0.1404 & 0.0075 $\pm$ 0.0007 & 1289 \\  % SD 0.0260
+	Mitochondria & 0.1538 & 0.0068 $\pm$ 0.0046 & 13 \\    % SD 0.0165
+	\midrule \multicolumn{2}{c}{\quad\quad\arab}       & & \\
+        Nuclear      & 0.1739 & 0.0166 $\pm$ 0.0004 & 22052 \\ % SD 0.0596
+        Nuclear-cp      & 0.1162 & 0.0057 $\pm$ 0.0004 & 2591 \\  % SD 0.0213
+        Nuclear-mt      & 0.1061 & 0.0067 $\pm$ 0.0006 & 2640 \\  % SD 0.0314
+	Chloroplast  & 0.0375 & 0.0026 $\pm$ 0.0017 & 80 \\    % SD 0.0151
+	Mitochondria & 0.0351 & 0.0027 $\pm$ 0.0016 & 114 \\   % SD 0.0166
+	\midrule \multicolumn{2}{c}{\quad\quad\oryz}      & & \\
+        Nuclear      & 0.3002 & 0.0402 $\pm$ 0.0005 & 37953 \\ % SD 0.0885
+        Nuclear-cp      & 0.2886 & 0.0171 $\pm$ 0.0007 & 2581 \\  % SD 0.0358
+        Nuclear-mt      & 0.2761 & 0.0176 $\pm$ 0.0008 & 2995 \\  % SD 0.0424
+	Chloroplast  & 0.0241 & 0.0022 $\pm$ 0.0016 & 83 \\    % SD 0.0142
+	Mitochondria & 0.0500 & 0.0028 $\pm$ 0.0020 & 60 \\    % SD 0.0158
+	\bottomrule
+    \end{tabular}
+\end{table*} 
+
+
+
+\newcommand{\location}{homo_blastp_lcrproportions}
+\newcommand{\nucNumber}{\humanNucNumberBlastP}
+\newcommand{\nucChloNumber}{0} % not applicable and ignored
+\newcommand{\nucMitoNumber}{\humanNucMitoNoBlastP}
+\newcommand{\chloNumber}{0} % not applicable and ignored
+\newcommand{\mitoNumber}{\humanMitoNo}
+
+\begin{figure*}
+    \caption{Fraction proteins with LCRs in \homo}
+    \label{fig:homofractionblastp}
+    \input{logplot3.tex}
+
+    \centering\parbox{0.9\textwidth}{\footnotesize Fraction of
+    \homo proteins with LCRs as per \diamond similarity result.  The
+    `Nuclear' group represents nuclear proteins which did not hit any
+    alpha-proteobacterial proteins. The `Nuclear-mt' proteins are nuclear
+    proteins with hits to an alpha-proteobacterial proteome (e-value $<
+    1 \times 10^{-10}$).  The `Mito' group represent proteins encoded
+    in the mitochondria itself.}
+
+\end{figure*}
+
+
+\renewcommand{\location}{arab_blastp_lcrproportions}
+\renewcommand{\nucNumber}{\arabNucNumberBlastP}
+\renewcommand{\nucChloNumber}{\arabNucChloNoBlastP}
+\renewcommand{\nucMitoNumber}{\arabNucMitoNoBlastP}
+\renewcommand{\chloNumber}{\arabChloNo}
+\renewcommand{\mitoNumber}{\arabMitoNo}
+
+\begin{figure*}
+    \caption{Fraction proteins with LCRs in \arab}
+    \label{fig:arabfractionblastp}
+    \input{logplot.tex}
+
+    \centering\parbox{0.9\textwidth}{\footnotesize Fraction of \arab
+    proteins with LCRs as per \diamond similarity result.  The `Nuclear'
+    group represents nuclear proteins which did not hit any cyanobacterial
+    or alpha-proteobacterial proteins. `Nuclear-cp' proteins are nuclear
+    proteins with hits to a cyanobacterial proteome (e-value $< 1 \times
+    10^{-10}$). The `Nuclear-mt' proteins are nuclear proteins with hits to
+    an alpha-proteobacterial proteome (e-value $< 1 \times 10^{-10}$).
+    The groups `Chlo' and `Mito' represent proteins encoded in the
+    chloroplast and mitochondria, respectively.}
+
+\end{figure*}
+
+\renewcommand{\location}{oryz_blastp_lcrproportions}
+\renewcommand{\nucNumber}{\oryzNucNumberBlastP}
+\renewcommand{\nucChloNumber}{\oryzNucChloNoBlastP}
+\renewcommand{\nucMitoNumber}{\oryzNucMitoNoBlastP}
+\renewcommand{\chloNumber}{\oryzChloNo}
+\renewcommand{\mitoNumber}{\oryzMitoNo}
+
+\begin{figure*}
+    \caption{Fraction proteins with LCRs in \oryz}
+    \label{fig:oryzfractionblastp}
+    \input{logplot.tex}
+
+    \centering\parbox{0.9\textwidth}{\footnotesize Fraction of \oryz
+    proteins with LCRs as per \diamond similarity result.  The `Nuclear'
+    group represents nuclear proteins which did not hit any cyanobacterial
+    or alpha-proteobacterial proteins. `Nuclear-cp' proteins are nuclear
+    proteins with hits to a cyanobacterial proteome (e-value $< 1 \times
+    10^{-10}$). The `Nuclear-mt' proteins are nuclear proteins with hits to
+    an alpha-proteobacterial proteome (e-value $< 1 \times 10^{-10}$).
+    The groups `Chlo' and `Mito' represent proteins encoded in the
+    chloroplast and mitochondria, respectively.}
+
+\end{figure*}
+
+
+\subsection*{Categorization by targeting peptides}
+We also tested whether nuclear proteins that are predicted to be targeted
+for transfer to an organelle have different LCR characteristics.
+Many of the nuclear encoded proteins that are transported to the
+organelles might have bacterial origins.  Admittedly a number of these
+proteins might have also evolved \textit{de novo} (\missing reference). We
+used \tget 2.0 to search for proteins that have a transit peptide for
+transportation to the organelle.  \tget 2.0 is a machine-learning based
+program developed by \citet{ArmenterosEtAl2019}.  It is designed to
+predict mitochondrial targeting peptides (mTPs), chloroplast targeting
+peptides (cTPs), and other signal peptides (SPs). It uses a training set
+of experimentally validated protein datasets with specific patterns in
+their N-terminal region which are characteristic of their subcellular
+targeting localization \citep{ArmenterosEtAl2019}.
+
+The \homo, \arab, and \oryz nuclear proteomes were each run through
+\tget yielding \humanNucMitoNoTarget \hsa, \arabNucMitoNoTarget \ath,
+and \oryzNucMitoNoTarget \osa proteins predicted to be localized to the
+mitochondria with a probability greater than $0.85$. Similarly \arabNucChloNoTarget
+\ath proteins and \oryzNucChloNoTarget \osa proteins are predicted to be
+localized to the chloroplast with a probability greater than $0.85$.
+The remaining \humanNucNumberTarget \hsa, \arabNucNumberTarget \ath,
+and \oryzNucNumberTarget \osa proteins were not localized to either
+organelle and thus, are assumed here to be `native' to the nucleus
+(Supplementary table 4,5,6 \missing).
+
+\textbf{Low Complexity Regions:}
+For \hsa, \ath, and \osa, the native nuclear proteins had 24\%, 16\%, 29\%
+percent of the proteins with an LCR and each had a substantial fraction of
+their proteins in LCR regions; 1.9\%, 1.5\%, 3.7\%.  For \osa, proteins
+with chloroplast-targeting peptides (cTPs) had the highest fraction
+of proteins with an LCR, at approximately 41\% and high mean LCRs at
+3.4\%. Proteins with mitochondrial-targeting peptides (mTPs) had lower
+percentages than either the nuclear or chloroplast percentages. (Table
+\ref{tab:targetp}).
+
+As with the characterization via BLASTP analysis, a smaller fraction
+of the nuclear proteins targeted to the mitochondrial organelle contain
+LCRs and the average percentage of the protein that is within an LCR is
+smaller.  Again, these numbers are intermediate between 'native nuclear'
+and the proteins encoded in the organelles (Table \ref{tab:targetp}).
+
+ 
+\subsection*{Categorization by subcellular localizations}
+
+In addition to using BLASTP and \tget 2.0 to categorize the proteomes, we
+also used the subcellular localizations according to the EMBL UniProtKB
+annotations in order to detect proteins localized to the chloroplast or
+mitochondria.  The location listed in the EMBL annotation of each protein
+is generally experimentally determined, and thus may prove to be more
+accurate than either sequence similarity or an AI model. Unfortunately,
+many of the proteins do not have an experimentally determined location
+or have a generalized location. For the \hsa proteins downloaded from
+UniProtKB, \humanNucMitoNoGenbnk proteins were found to have mitochondrial
+annotations, and \humanNucNumberGenbnk proteins were determined to be
+native to the nucleus (Supplementary table 7 \missing). For all remaining
+\hsa proteins, no subcellular localizations were provided.  Based on
+the annotation data, \arabNucChloNoGenbnk nuclear \textit{Arabidopsis}
+proteins were found to have chloroplast localization, \arabNucMitoNoGenbnk
+were found to have mitochondrial localization, and \arabNucNumberGenbnk
+were targeted to either the nucleus, cytoplasm, or ``other" regions of
+the cell and thus were classified as native to the nucleus (Supplementary
+table 8 \missing). For the remaining nuclear proteins, the
+annotation provided no subcellular localization.  Similarly, each \osa
+protein's localization was obtained from EMBL; \oryzNucChloNoGenbnk
+nuclear \osa proteins were found to have chloroplast localization,
+\oryzNucMitoNoGenbnk were found to have mitochondrial localization, and
+\oryzNucNumberGenbnk were targeted to other regions of the cell and thus
+were classified as native to the nucleus (Supplementary table 9 \missing).
+
+\textbf{Low Complexity Regions:}
+As with the groups characterized via either \diamond BLASTP similarity
+or via \tget 2.0 target peptides, the fraction of annotated proteins which contain
+low-complexity regions and their proportion within the proteins were
+calculated (Table \ref{tab:sublocal}).  
+
+Similar to the \tget results, the group of nuclear proteins with a
+chloroplast localization had higher fractions of proteins with an
+LCR than the nuclear proteins and generally high mean proportions of
+LCRs. Again the group of nuclear-encoded proteins annotated to function
+in the mitochondria were found to have a lower fraction of proteins with
+an LCR and a lower mean LCR proportion than the native nuclear proteins
+(Table~\ref{tab:sublocal}).
+
+\textbf{Fewer LCRs in organelles:}
+Statistical analysis was performed to determine if the LCR proportions
+differ significantly between the different nuclear encoded groups.
+The LCR proportions corresponding to each protein type were compared,
+pairwise, using a two-sample Kolmogorov-Smirnov and Anderson-Darling test
+(R package kSamples) test to determine whether the nuclear end organellar
+samples come from the same distribution.  The Anderson-Darling test
+is similar to a Kolmogorov-Smirnov test, but places more emphasis
+on the tails of the distribution. The results are summarized in
+Table~\ref{tab:decay}. In each case the nuclear and organellar
+distributions differ.  Unfortunately, both these methods simply test if
+the distributions differ but not how.
+
+The three methods used to select proteins provide different
+characterizations of the proteins coming from or directed to
+the organelles but it is visually apparent from the figures
+(\ref{fig:homofractionblastp}-\ref{fig:oryzfractionblastp}) that the
+nuclear proteins associated with organelles have lower levels of LCRs
+than otherwise `native nuclear' proteins. So to further test this, we
+fitted an exponential decay curve to the data. The rate of decay in each
+figure is significantly faster for proteins associated with the organelles
+than for `native nuclear` proteins (Table \ref{tab:decay}).  All of the
+proteins have a declining number of proteins with very large LCR regions
+but those associated with the organelles have significantly fewer.
+
+
+\begin{table*}
+    \caption{The rates of decay for exponential curves fitted to Figures
+    \ref{fig:homofractionblastp}-\ref{fig:oryzfractionblastp}.}
+    \label{tab:decay}
+    \centering
+    % \begin{tabular}{lr@{\;$\pm$\;}l} % the @ aligns on, the \; adds some white space
+    \begin{tabular}{ll>{\quad}rcl>{\quad}rcl}     % this fudge works better
+        \toprule
+        \multicolumn{2}{c}{Group} & \multicolumn{3}{c}{Decay rate $\pm$ StdErr}  & \multicolumn{3}{c}{Mean difference $\pm$ StdErr}\\
+        \cmidrule(lr){1-8}
+        Human & Nucl    &  -4.57 & $\pm$ & 0.28 & -0.41 & $\pm$ & 0.04\\
+              & Nucl-mt & -16.95 & $\pm$ & 2.28 &  1.05 & $\pm$ & 0.05\\
+        Arab. & Nucl    &  -4.14 & $\pm$ & 0.31 & -0.50 & $\pm$ & 0.04\\
+              & Nucl-mt & -15.43 & $\pm$ & 1.49 &  3.85 & $\pm$ & 0.04\\
+              & Nucl-cp & -14.72 & $\pm$ & 1.79 &  2.32 & $\pm$ & 0.04\\
+        Oryza & Nucl    &  -1.29 & $\pm$ & 0.16 & -0.14 & $\pm$ & 0.04\\
+              & Nucl-mt &  -7.79 & $\pm$ & 0.90 &  3.26 & $\pm$ & 0.06\\
+              & Nucl-cp &  -7.17 & $\pm$ & 1.15 &  2.57 & $\pm$ & 0.07\\
+        \bottomrule
+    \end{tabular}
+\end{table*}
+
+
+
+\textbf{Other bacterial hits:}
+We assumed that nuclear proteins which have unusually high sequence
+similarity to alpha-proteobacterial or cyanobacterial proteins are
+likely proteins obtained from alpha-proteobacteria or cyanobacteria
+through ancient endosymbiotic events or more recently transferred
+from the organelles to nucleus through endosymbiotic gene donation. 
+
+But other nuclear encoded proteins were identified with similarly strong
+hits to the 5 bacterial outgroups, and yet no sequence similarity to the
+alpha-proteobacterial or cyanobacterial reference proteomes.  Using these
+proteins we can test if the observed decrease in LCRs corresponding to
+Nuclear-cp and Nuclear-mt proteins is indeed because they have an
+endosymbiont origin or if it is simply because they happen, by chance,
+to have high sequence similarity to bacterial proteins, which often lack
+LCRs. It is important to note here that the \diamond program filters
+LCRs by default \citep{Frit:11}.  Therefore, the presence or absence
+of LCRs should not cause any major issues in the search for sequence
+similarity between proteins.
+
+From the \diamond results, 16, 16, and 13 proteins from \ath,
+\osa, and \hsa had strong bacterial hits (e-value less than
+$10^{-10}$. These proteins all share high sequence similarity to a
+bacterial protein, but not to cyanobacteria or alpha-proteobacteria
+and might not have had an organellar origin.  The fraction of these
+proteins with LCRs and their mean LCR proportion are summarized in Table
+\ref{tab:bacterialhits}. Comparing these results with those from
+Table \ref{tab:blastp}, the amount of LCRs in these bacterial hits
+are often even higher than `native nuclear' proteins and the proportion
+of each protein composed of an LCR is often higher than or more
+similar to those in the `native nuclear' proteins than they are to the
+alpha-proteobacterial and cyanobacterial hits.  The sample sizes for
+these are very small but a comparison of Table \ref{tab:bacterialhits}
+and Table \ref{tab:blastp} shows that there is a higher fraction of
+proteins with LCRs in the plant bacterial proteins but a lower content of
+LCRs in humans.  Unfortunately, the sample sizes are too small to draw
+firm conclusions but, other than humans, these data go in the opposite
+direction and it would be surprising if a handful of recent bacterial
+horizontal gene transfers in humans (for which there is minimal evidence)
+could so skew the results of thousands of nuclear proteins.
+
+% , so to further verify
+% and to account for the large discrepancies in sample size
+% between native nuclear proteins and the handful of bacterial hits, a
+% simulation was performed using python and R. In this simulation, 10000
+% random samples of either 13 or 16 (species specific)
+% native nuclear LCR proportions 
+% were created using a loop in python and the mean LCR proportion for
+% each sample was calculated. The distribution of the 10000 resulting means
+% was then represented as a histogram. Next, the mean LCR proportion for the
+% sample of 13 or 16 LCR proportions 
+% was computed, and this mean was represented
+% on the histogram as a red arrow. If the red arrow was found inside the
+% distribution, that indicates that the sample of LCR proportions from the
+% bacterial hits belongs to the same distribution as the native nuclear
+% LCR proportions; conversely, if the red arrow was placed outside of the
+% distribution, that indicates that the LCR proportions corresponding to
+% the bacterial hits are significantly different from the native nuclear
+% proteins, in a way which is unexpected from a random native nuclear sample
+% of the same size. Therefore, this simulation is meant to solve the issues
+% stemming from sample size discrepancies and get accurately assess the
+% data. The simulation histograms for \ath, \osa, and \hsa are demonstrated
+% in Figures \ref{fig:histhomo}, \ref{fig:histarab}, \ref{fig:historyz}.
+
+\begin{table*}
+    \caption{Low-complexity regions in other bacterial hits}
+    \label{tab:bacterialhits}
+    \centering
+    \begin{tabular}{lccr}
+        \toprule
+        Species & Fraction Proteins & \multicolumn{1}{c}{Proportion LCR} & $n$ \\
+                & with LCRs         & Mean $\pm$ StdErr &      \\
+        \midrule
+        \homo & 0.0625 & 0.0036 $\pm$ 0.0036 & 16 \\    % SD 0.0144
+        \arab & 0.2500 & 0.0141 $\pm$ 0.0078 & 16 \\    % SD 0.0313
+        \oryz & 0.3077 & 0.0205 $\pm$ 0.0503 & 13 \\    % SD 0.1813
+        \bottomrule
+    \end{tabular}
+\end{table*}
+
+% \begin{figure*}
+%     \caption{Histogram of Simulated Nuclear LCR Proportions in \homo}
+%     \label{fig:histhomo}
+%     \input{human_bacteria_plot.tex}
+% 
+%     \centering\parbox{0.9\textwidth}{\footnotesize Distribution of
+% 10000 simulated samples of 16 LCR proportion from `native nuclear'
+% proteins in \homo. The red line indicates the average LCR proportion
+% in nuclear \homo proteins which hit to bacterial proteins other than
+% alpha-proteobacterial or cyanobacterial proteins with an evalue $<1 \times 10^{-10}$.}
+% 
+% \end{figure*}
+% 
+% \begin{figure*}
+%     \caption{Histogram of Simulated Nuclear LCR Proportions in \arab}
+%     \label{fig:histarab}
+%     \input{arab_bacteria_plot.tex}
+% 
+%     \centering\parbox{0.9\textwidth}{\footnotesize Distribution of
+% 10000 simulated samples of 16 LCR proportion from `native nuclear'
+% proteins in \arab. The red line indicates the average LCR proportion
+% in nuclear \arab proteins which hit to bacterial proteins other than
+% alpha-proteobacterial or cyanobacterial proteins with an evalue $<1
+% \times 10^{-10}$.}
+% 
+% \end{figure*}
+% 
+% \begin{figure*}
+%     \caption{Histogram of Simulated Nuclear LCR Proportions in \oryz}
+%     \label{fig:historyz}
+%     \input{oryz_bacteria_plot.tex}
+% 
+%     \centering\parbox{0.9\textwidth}{\footnotesize Distribution of
+% 10000 simulated samples of 16 LCR proportion from `native nuclear'
+% proteins in \oryz. The red line indicates the average LCR proportion
+% in nuclear \oryz proteins which hit to bacterial proteins other than
+% alpha-proteobacterial or cyanobacterial proteins with an evalue $<1
+% \times 10^{-10}$.}
+% 
+% \end{figure*}
+% 
+
+
+% \subsection*{Statistical analysis}
+% 
+% After comparing LCR proportion data between the different groups of
+% nuclear proteins, both those
+% classified through \diamond similarity sequence comparison and those classified
+% using subcellular localization, statistical analysis was performed
+% to determine the significance of the data---particularly, whether
+% LCR proportions differ significantly between the different groups.
+% Based on the data collected both in this study, and in the study
+% conducted by \citet{MartinEtAl2002}, we assume that the information
+% obtained through the \diamond similarity comparison of proteins is a more
+% accurate depiction of protein origin and thus, these data were
+% considered further.
+% 
+% All of the LCR proportions corresponding to each protein type were
+% compared, two at a time, using a Mann-Whitney U test to check
+% whether the two protein types being considered come from the same
+% distribution, or whether the LCR proportions in the `native' nuclear
+% proteins tends to be higher. Each Mann-Whitney U test was run using
+% R and the results are summarized in Table \ref{tab:mannwhitney}.
+% 
+% \begin{table*}
+%     \caption{``Mann-Whitney U Test Results" portrays the
+%     results from performing Mann-Whitney U tests
+%     on the LCR proportions corresponding to the different protein categories,
+%     as determined by \diamond similarity. `Nuclear' represents
+% proteins which did not hit to alpha-proteobacterial or cyanobacterial
+% proteins with an evalue $<1 \times 10^{-10}$, `NucMito' represents
+% proteins which hit to alpha-proteobacterial proteins with an evalue
+% $<1 \times 10^{-10}$, `NucChlo' represents proteins which hit to
+% cyanobacterial proteins with an evalue $<1 \times 10^{-10}$, and
+% `Bacterial' represents proteins which hit to bacterial proteins
+% other than cyanobacterial or alpha-proteobacterial proteins with an
+% evalue $<1 \times 10^{-10}$. The
+%     null hypothesis is that the two samples come from the same distribution,
+%     and p-values $<0.05$ reject the null hypothesis.}
+%     \label{tab:mannwhitney}
+%     \centering
+%     \begin{tabular}{lcrr}
+%         \toprule
+%         Data  & P-value & Conclusion \\
+%         \midrule \multicolumn{2}{c}{\quad\quad\homo} &       & \\
+%         Nuclear and NucMito & 2.2e-16 & Null hypothesis rejected \\
+%         Nuclear and Bacterial & 0.1047 & Null hypothesis not rejected \\
+%         \midrule \multicolumn{2}{c}{\quad\quad\arab} &      & \\
+%         Nuclear and NucMito & 2.2e-16 & Null hypothesis rejected \\
+%         Nuclear and NucChlo & 2.2e-16 & Null hypothesis rejected \\
+%         NucMito and NucChlo & 0.2964 & Null hypothesis not rejected \\
+%         Nuclear and Bacterial & 0.4692 & Null hypothesis not rejected \\
+%         \midrule \multicolumn{2}{c}{\quad\quad\oryz} &     & \\
+%         Nuclear and NucMito & 2.66e-13 & Null hypothesis rejected\\
+%         Nuclear and NucChlo & 3.972e-09 & Null hypothesis rejected\\
+%         NucMito and NucChlo & 0.3247 & Null hypothesis not rejected \\
+%         Nuclear and Bacterial & 0.7854 & Null hypothesis not rejected \\
+%         \bottomrule
+%     \end{tabular}
+% \end{table*}
+% 
+
+\begin{figure*}
+    \caption{LCR differences between native and organellar nuclear
+proteins in 30 animal and 30 plant species}
+    \label{fig:lcrdifferences}
+    % \input{lcr_differences.tex}
+    \begin{center}
+      \includegraphics[height=0.8\textwidth]{bound_lcr_differences.pdf}
+    \end{center} 
+    
+    \centering\parbox{0.9\textwidth}{\footnotesize Differences in
+LCR proportions between native nuclear proteins and nuclear proteins
+of organellar origin, as determined by \diamond BLASTP (left column)
+and \tget (right column), in 30 animals (top row) and 30 plants
+(bottom two rows). The bottom row show differences among proteins of
+chloroplast origin as determined by \diamond and \tget, in the same
+30 plant species. All differences were calculated by substracting the
+overall proportion of LCRs in Nuclear-mt or Nuclear-cp proteins from the
+overall proportion of LCRs in native Nuclear proteins. For each panel,
+statistically significant ($p < 0.05$) differences are highlighted in red
+(mitochondrial) or green (chloroplastic), and non-significant differences
+($p > 0.05$), are highlighted in grey.}
+\end{figure*}
+
+\subsection*{More broadly}
+After investigating LCR proportions in proteins obtained through
+endosymbiotic gene transfer in \arab, \oryz, and \homo genomes,
+we expanded our sample to 30 plants and 30 animals to test whether
+the apparent decrease in LCRs in proteins of organellar origin is a
+widespread phenomenon. The nuclear and organellar proteomes for 30 plant
+and 30 animal species were each downloaded from either UniProtKB or NCBI
+(depending on where the data was available) on 2025-6-3. As with the \ath,
+\osa, and \hsa proteomes, each plant and animal proteome was \blastp
+using the \diamond program against the same data set with all reference
+cyanobacterial proteomes (n = 224), all reference alpha-proteobacterial
+proteome (n = 1505), 5 bacteria, one archaea, and yeast. Again hits with
+evalues less than $10^{-10}$ to a cyanobacterial or alpha-proteobacterial
+protein were considered to have either chloroplast or mitochondrial
+origin.  The difference in LCR proportions between proteins deemed to be
+native to the nucleus and those which were predicted to have organellar
+origin was computed.  We expect that if the samples come from the
+same distribution that this difference should be approximately zero.
+The results are shown in Figure~\ref{fig:animalnucmitodiff} for BLASTP
+similarity and \tget predictions.  It was not done for UniProtKB
+annotations due to the difficulty in getting this information in a
+consistent fashion.  This figure shows an overwhelming and consistent
+bias that the `native nuclear' proteins have a higher proportion of
+proteins with LCRs than nuclear proteins associated with the organelles.
+
+
+
+
+\section*{Discussion}
+
+The objective of this study was to further characterize nuclear-encoded
+proteins that have been obtained through endosymbiotic gene transfer as
+compared to proteins that originated prior to these events, \textit{de
+novo} or by other means.  In particular, our interest was in the LCR
+content of proteins as eukaryotes generally have high levels of LCRs
+while bacteria generally have very low levels.  But genes that originate
+from bacteria transferred to the nucleus are then expected to evolve
+according to the mutation and selection pressures experienced in the
+nucleus.  Do the nuclear proteins obtained through endosymbiotic gene
+donation evolve congruently with proteins of native nuclear origin and
+over time develop regions of low-complexity, or do they resist those
+pressures and retain a compositional resemblance to their ancestral
+prokaryotic sequences.
+
+More than 90\% of the proteins required to build a functional chloroplast
+are encoded in the nucleus \citep{Jarvis2008} and many might have
+had an origin in the genome of the original endosymbiont.  We know
+that many of the genes transferred are targeted back to the
+organelle but also that many take on other roles within the original host
+cell and still others become pseudogenes within the host. 
+
+The methods used to classify these protein types were derived from
+studies by \citet{MartinEtAl2002}.  We used three different methods
+each with their own limitations.  First, we used sequence similarity
+to find proteins that are exceptionally similar to modern bacteria that
+have contributed endosymbionts to eukaryotes despite their presence in
+eukaryotes for billions of years.  This method risks including genes
+that have been horizontally transferred but are not of endosymbiont
+origin. However, humans and other animals with a segregated germ line
+do not have high levels of horizontal transfer.  The second method used
+an AI program to identify proteins with the targeting peptides that
+signal transfer to the organelles.  This method suffers from a lack of
+recognition of the target peptides and a lack of knowledge of all existing
+ways of getting a protein into an organelle. The third method used the
+annotation of genomes to identify the proteins that are localized to
+the organelles.  This method suffers from the paucity of experimental
+data for the thousands of proteins within a genome. All of the proteins
+in the resulting groups were evaluated for the presence of low-complexity
+sequences, using methods outlined by \citet{EnrightEtAl2023}.
+
+The protein groups produced by the different methods yielded different
+results, reflecting that each method includes/excludes different proteins.
+However, with regard to the LCRs, they give qualitatively very similar
+results.  The results using \tget and the UniProtKB annotation are shown
+in the supplement and mirror the results shown for sequence similarity
+above. However, the annotated data provides far less data than either
+similarity or \tget 2.0.  There are indeed some differences among the
+three methods; for example, the annotated localization results suggest
+that the nuclear encoded proteins localized to the chloroplast are similar
+to other nuclear encoded proteins in \ath (Table \ref{tab:sublocal} and
+\ref{tab:decay2}). However, these data also have the smallest number
+of proteins because no subcellular localization was provided by the
+databases for the vast majority of proteins except for the \ath
+chloroplast which has an anomalously large Nuclear-cp number.
+
+The first method of categorization used, based on sequence similarity
+through \diamond similarity, seemed to be an accurate way to identify
+gene transfer events, based on the findings by \citet{MartinEtAl2002},
+and the data obtained in this study. When the proportion of LCRs were
+compared amongst the groups identified using this method, the highest
+LCR proportion was observed amongst those proteins which did not produce
+significant hits to the reference cyanobacterial and alpha-proteobacterial
+proteomes. The lowest
+amount of LCRs was observed in \hsa, \ath, and \osa proteins with
+high sequence similarity to either cyanobacterial or
+alpha-proteobacterial proteins, therefore suggesting
+that proteins of organellar origin contain fewer
+LCRs---a characteristic which is akin to their prokaryotic ancestry.
+
+While the visual representations configured using \texttt{ggplot2} demonstrate this
+finding quite beautifully, further statistical testing was required for
+confirmation's sake. Mann-Whitney U tests were performed on two
+samples at a time to test whether the samples belonged to the same
+distribution or whether the `native' nuclear proteins have
+significantly more LCRs than those nuclear proteins of organelle
+origin. The results from this test, summarized in Table
+\ref{tab:mannwhitney} demonstrate that the `native' nuclear proteins
+do in fact contain a higher overall LCR proportion which is deemed
+statistically significant with a p-value $<0.05$. Therefore, these test results
+indicate that nuclear \ath, \osa, and \hsa proteins with high sequence
+similarity to alpha-proteobacteria or cyanobacteria---which have proposed
+organellar origin---have significantly fewer LCRs than do nuclear
+\ath, \osa, and \hsa proteins of non-organellar origin. In addition, the
+Mann-Whitney U test was performed on the LCR proportions pertaining
+to the nuclear proteins which hit to proteins belonging to bacteria other than
+alpha-proteobacteria and cyanobacteria, against the LCR proportions
+pertaining to `native' nuclear proteins in each species. The results
+of this test demonstrated that the LCR proportions in bacterial hits
+with no apparent relationship to endosymbiotic gene transfer come
+from the same distribution as LCR proportions in `native' nuclear
+proteins, suggesting that the observed decrease in LCRs in `Nuclear-mt'
+and `Nuclear-cp' proteins is related to EGT.
+
+
+\rule{4cm}{1pt}
+
+% Similarly, the KS
+% test results obtained from comparing ``Native Nuclear" and ``Nuclear-cp"
+% data also rejected the null hypothesis, with a $p$ value of $1.53
+% \times 10^{-14}$ (Table
+% \ref{tab:kstest}). Contrastingly, when LCR proportions corresponding
+% to ``Nuclear-cp" proteins were tested with those corresponding to
+% ``Nuclear-mt" proteins, the null hypothesis was not rejected ($p
+% \sim 0.57$),
+% likely because both groups of proteins have organellar-origin
+% and thus, follow the same trend (Table~\ref{tab:kstest}). From the
+% KS test results, we observed that the LCR proportions of chloroplast
+% proteins, when tested against all other types of proteins---including
+% ``Native Nuclear" proteins---were shown not to reject the null hypothesis,
+% with p-values $>0.05$ each time (Table \ref{tab:kstest}). This, however,
+% does not indicate that the LCR proportions of chloroplast proteins come
+% from the same distribution as all of the other proteins. These results
+% are simply an extension of a skew in the data, which can be attributed
+% to the nature of the LCR proportion data belonging to chloroplast, in
+% which there are only 3 data points greater than 0.0000. These tests
+% are thus drawing a comparison between a distribution of thousands
+% of points versus a distribution of very minimal data, causing this
+% obscure result. Therefore, the only takeaway from these test results
+% should be that nuclear \textit{Arabidopsis} proteins with high sequence
+% similarity to alpha-proteobacteria or cyanobacteria---which have proposed
+% organellar origin---have significantly fewer LCRs than do nuclear
+% \textit{Arabidopsis} proteins of non-organellar origin.
+% 
+% In order to further test our data, and confirm the differences in the
+% distributions of LCR proportions, Anderson-Darling tests (AD tests)
+% were also performed on R, using the LCR proportions corresponding to two
+% protein groups at a time. The Anderson-Darling test essentially tests
+% the same thing as the KS test, following similar logic, but its main
+% distinction is that it focuses more on the tails of the distribution. The
+% results from the AD tests again asserted that the ``Native Nuclear"
+% proteins do not come from the same distribution as the ``Nuclear-mt"
+% and ``Nuclear-cp" proteins (Table \ref{tab:adtest}). However,
+% unlike the KS tests, the AD tests indicated that the ``Nuclear-mt"
+% and ``Nuclear-cp" proteins' LCR proportions come from different
+% distributions (Table \ref{tab:adtest}). This result portrays how the
+% tails of the distributions can affect the data in significant ways, as
+% the AD test places more emphasis on those regions, as compared to the KS
+% test. Additionally, the mitochondria and chloroplast LCR proportions were
+% shown, from the AD test results, to come from different distributions
+% as all Nuclear-cp, Nuclear-mt, and Native Nuclear proteins. As
+% mentioned previously, all statistical test results pertaining to
+% chloroplast and mitochondrial proteins in this study should be taken
+% with a grain of salt, due to the observed skew in data corresponding to
+% the overwhelming number of zeroes in the data. Therefore, the takeaway
+% from the AD test should, again, be that nuclear \textit{Arabidopsis}
+% proteins of organellar origin have significantly fewer LCRs than nuclear
+% proteins of non-organellar origin.
+
+To build upon these findings we decided to test our hypothesis on a
+larger dataset consisting of 30 plant and 30 animal species
+(including \ath, \osa, and \hsa). We measured the differences in LCR
+proportions between nuclear proteins of assumed native nuclear
+origin and proteins which were predicted to have organellar origin
+based on either \diamond or \tget results. When we plotted these
+data we found that, for the vast majority of species, the `Nuclear'
+proteins contain more LCRs than both the `Nuclear-mt' and `Nuclear-cp'
+proteins do (Figures~\ref{fig:diamondnucmitodiff},
+\ref{fig:diamondnucchlodiff}, \ref{fig:targetpnumcmitodiff}, and
+\ref{fig:targetpnucchlodiff}). In addition, many of these differences were found to be
+statistically significant, thus proving that these observed
+differences are unlikely to be caused by random chance alone. The
+most significant differences were observed when we examined the proteins
+classified using \diamond similarities.
+
+Low-complexity regions are thought to be formed due to polymerase
+slippage during DNA replication, where misalignment between the
+coding and template strands causes re-annealing with an adjacent
+repeat unit, leading to the insertion or deletion of a repeat
+\citep{EnrightEtAl2023}. Another proposed explanation is that unequal
+recombination occurs when homologous repeat sequences misalign
+during meiosis, causing extension of repeats in one chromosome, and
+the corresponding loss of repeats in another \citep{EnrightEtAl2023}. Polymerase
+slippage during replication can occur in any type of cell, eukaryote
+and prokaryote alike, which is why the lack of LCRs in bacteria
+is curious. Bacteria possess the ability to adapt and evolve orders
+of magnitude faster than any eukaryotic species; thus, there may
+potentially be some selective pressure
+acting on bacteria which favours rapid, efficient replication over
+any advantage gained through the integration of LCRs
+\citep{MierAndrade-Navarro2021}. However, once
+bacterial DNA is transferred to a eukaryotic host, its environment has now changed and
+thus, its selective pressure has changed. Because of this, it is
+interesting to note that, for the most part, organellar proteins have resisted the addition of LCRs
+into their sequences. Future studies should focus on understanding the selective pressures which
+influence the acquisition of low-complexity sequences in proteins,
+and why/how proteins encoded in the organelles have resisted this,
+even after integration into the nucleus. 
+Additionally, the
+chloroplast and mitochondria rely on nuclear replication machinery
+and repair enzymes \citep{Wood:08} and thus, they should, in theory, have similar
+levels of LCR acquisition through polymerase slippage as nuclear
+proteins do; this, however, is not what we have observed,
+potentially suggesting that there is some opposing evolutionary
+force acting against the maintenance of LCRs in these proteins.
+Alternatively, the evolutionary mechanisms that work to maintain
+LCRs in eukaryotic proteins could simply be absent in organellar
+proteins.
+
+
+Through genomic data collection it has been made clear that the
+transfer of organellar DNA to the nucleus has resulted in a
+substantial decrease in chloroplast and mitochondrial genome sizes. The
+question then becomes, why is transferring genes from the organelles
+to the nucleus occurring (what advantage is gained)? And at what point are those transferred
+genes lost from their original organelle? In the \textit{Gene} paper
+``DNA transfer from chloroplast to nucleus
+is much rarer in \textit{Chlamydomonas} than in tobacco",
+\citet{ListerEtAl2003}
+offer a few explanations as to why this gene transfer is occuring,
+and at a relatively high rate. One suggestions is that transferring
+organelle genes to the nucleus isolates them from damaging reactive
+oxygen species which are generated in the chloroplast during
+photosynthesis \citep{ListerEtAl2003}. Another potential explanation
+is that the transport of genes from an asexual (like in chloroplast
+uniparental inheritence) to a
+sexual
+population yields an increased fitness outcome. Lastly, it is
+proposed that the nucleotide bias which is present in chloroplast
+genomes results in deleterious effects and transport of genetic
+elements to the nucleus
+eliminates this \citep{ListerEtAl2003}. 
+
+ If any or all of these are
+true, the next question becomes, why have some genes resisted this
+movement from chloroplast to nucleus? This was explained by John F.
+Allen in his paper entitled ``The function of genomes in bioenergetic
+organelles", where he suggests that organelles must have control
+over the expression of genes which encode elements of the electron
+transport chain so that they can be synthesized and maintain redox
+balance, and furthermore, that in species which have multiple
+chloroplasts per cell, different chloroplasts may require different
+amounts of a certain gene required to maintain their redox balance,
+and therefore must have control over when/how much expression is
+occurring \citep{Allen2003}. If all of these genes were being
+synthesized in the nucleus, then the amount of gene expression could
+not be tailored specifically to each organelle at the same time.
+This issue does not exist in cells which have only one chloroplast
+per cell, however, the rate of chloroplat-to-nucleus gene transfer to the
+nucleus in these types of cells is extremely hindered, as observed
+in a study of endosymbiotic gene transfer of
+\textit{Chlamydomonas} \citep{ListerEtAl2003}. The results of the
+\textit{C.reinhardtii} study conducted by \citet{ListerEtAl2003} demonstrated
+that no chloroplast-to-nucleus gene transfer occurs in cells which
+have only one chloroplast, thus suggesting that perhaps
+endosymbiotic gene donation can only occur following the degradation
+of organelle membranes, a situation which would be detrimental to a
+cell containing only one organelle copy. Researchers
+have also found that the frequency
+of transfer increases when organelle membranes are 
+disrupted (i.e. increased temperature, freeze thawing, etc). This
+supports this idea that gene transfer from organelles increases
+when the structural integrity of the organelle membrane decreases,
+such as the programmed degeneration of plastids during pollen-grain
+development \citep{TimmisEtAl2004}.
+
+\rule{4cm}{1pt}
+
+% In order to further test our data, and confirm the differences in the
+% distributions of LCR proportions, Anderson-Darling tests (AD tests)
+% were also performed on R, using the LCR proportions corresponding to two
+% protein groups at a time. The Anderson-Darling test essentially tests
+% the same thing as the KS test, following similar logic, but its main
+% distinction is that it focuses more on the tails of the distribution. The
+% results from the AD tests again asserted that the ``Native Nuclear"
+% proteins do not come from the same distribution as the ``Nuclear-mt"
+% and ``Nuclear-cp" proteins (Table \ref{tab:adtest}). However,
+% unlike the KS tests, the AD tests indicated that the ``Nuclear-mt"
+% and ``Nuclear-cp" proteins' LCR proportions come from different
+% distributions as well (Table \ref{tab:adtest}). This result portrays how the
+% tails of the distributions can affect the data in significant ways, as
+% the AD test places more emphasis on those regions, as compared to the KS
+% test.
+% 
+% When we compare the presence of LCRs in nuclear-encoded proteins
+% of assumed organellar origin to proteins of assumed non-organellar
+% origin, the results are quite astonishing. We see that there is
+% fewer proteins with LCRs, as well as a statistically significant
+% decrease in mean LCR proportion, in the
+% nuclear proteins classified as having organellar origin compared to
+% proteins classified as native to the nucleus (Table
+% \ref{tab:kstest}, \ref{tab:adtest}). However, one might question
+% the accuracy of our method of categorization, based on sequence similarity
+% via \diamond \blastp, and whether the observed decrease in LCRs in
+% those proteins with high sequence similarity to cyanobacteria and
+% alpha-proteobacteria is due to organellar origin or simply because they
+% are highly similar to a bacterial protein which likely lacks LCRs.
+% Due to the Tantan masking algorithm applied by default when running
+% \diamond \blastp, the presence or absence of LCRs in the proteins
+% should not effect what they hit to, however, an extra check was
+% still needed to validate our attribution of decreased LCR presence
+% to the existence of organellar origin. We found that \ath, \osa, and
+% \hsa proteins
+% which did not hit to alpha-proteobacterial or cyanobacterial
+% proteins, but had high sequence similarity to other bacterial
+% species which have no associated organelle, the presence of LCRs was
+% higher than in nuclear-alpha and nuclear-cyan proteins, and quite
+% similar to the native-nuclear proteins, thus indicating that there
+% is merit in our claim (Table \ref{tab:bacteriahits}). Additional statistical testing was performed
+% on these data, and we found that there was no significant difference
+% between the LCR proportions in these bacterial hits and in the
+% native-nuclear proteins---an opposite result to what was found of
+% the nuclear proteins which had an alpha-proteobacterial or
+% cyanobacterial protein as their greatest hit (Figures
+% \ref{fig:histhomo}, \ref{fig:histarab}, \ref{fig:historyza}). Thus,
+% it is fair to attribute the decrease in LCRs observed in our
+% classified ``Nuclear-mt" and ``Nuclear-cp" to the possibility
+% of endosymbiotic gene donation from the organelles to the nucleus.
+% 
+% Low-complexity regions are thought to be formed due to polymerase slippage
+% during DNA replication, where misalignment between the coding and template
+% strands causes re-annealing with an adjacent repeat unit, leading to
+% the insertion or deletion of a repeat \citep{EnrightEtAl2023}. Another
+% proposed explanation is that unequal recombination occurs when homologous
+% repeat sequences misalign during meiosis, causing extension of repeats
+% in one chromosome, and the corresponding loss of repeats in another
+% \citep{EnrightEtAl2023}. Polymerase slippage during replication can
+% occur in any type of cell, eukaryote and prokaryote alike, which is why
+% the lack of LCRs in bacteria is curious. Bacteria possess the ability to
+% adapt and evolve orders of magnitude faster than any eukaryotic species;
+% thus, there may potentially be some selective pressure acting on bacteria
+% which favours rapid, efficient replication over any advantage gained
+% through the integration of LCRs \citep{MierAndrade-Navarro2021}. However,
+% once bacterial DNA is transferred to a eukaryotic host, its environment
+% has now changed and thus, its selective pressure has changed. Because
+% of this, it is interesting to note that, for the most part, organellar
+% proteins have resisted the addition of LCRs into their sequences. Future
+% studies should focus on understanding the selective pressures which
+% influence the acquisition of low-complexity sequences in proteins,
+% and why/how proteins encoded in the organelles have resisted this,
+% even after integration into the nucleus.
+% 
+% Through genomic data collection it has been made clear that the transfer
+% of organellar DNA to the nucleus has resulted in a substantial decrease in
+% chloroplast and mitochondrial genome sizes. The question then becomes, why
+% is transferring genes from the organelles to the nucleus occurring (what
+% advantage is gained)? And at what point are those transferred genes lost
+% from their original organelle? In the \textit{Gene} paper ``DNA transfer
+% from chloroplast to nucleus is much rarer in \textit{Chlamydomonas}
+% than in tobacco", \citet{ListerEtAl2003} offer a few explanations as to
+% why this gene transfer is occuring, and at a relatively high rate. One
+% suggestions is that transferring organelle genes to the nucleus isolates
+% them from damaging reactive oxygen species which are generated in
+% the chloroplast during photosynthesis \citep{ListerEtAl2003}. Another
+% potential explanation is that the transport of genes from an asexual
+% (like in chloroplast uniparental inheritence) to a sexual population
+% yields an increased fitness outcome. Lastly, it is proposed that the
+% nucleotide bias which is present in chloroplast genomes results in
+% deleterious effects and transport of genetic elements to the nucleus
+% eliminates this \citep{ListerEtAl2003}.  If any or all of these are true,
+% the next question becomes, why have some genes resisted this movement
+% from chloroplast to nucleus? This was explained by John F.  Allen in his
+% paper entitled ``The function of genomes in bioenergetic organelles",
+% where he suggests that organelles must have control over the expression
+% of genes which encode elements of the electron transport chain so that
+% they can be synthesized and maintain redox balance, and furthermore,
+% that in species which have multiple chloroplasts per cell, different
+% chloroplasts may require different amounts of a certain gene required
+% to maintain their redox balance, and therefore must have control over
+% when/how much expression is occurring \citep{Allen2003}. If all of
+% these genes were being synthesized in the nucleus, then the amount of
+% gene expression could not be tailored specifically to each organelle
+% at the same time.  This issue does not exist in cells which have only
+% one chloroplast per cell, however, the rate of chloroplat-to-nucleus
+% gene transfer to the nucleus in these types of cells is extremely
+% hindered, as observed in a study of endosymbiotic gene transfer of
+% \textit{Chlamydomonas reinhardtii} \citep{ListerEtAl2003}. The results
+% of the \textit{C.reinhardtii} study conducted by \citet{ListerEtAl2003}
+% demonstrated that no chloroplast-to-nucleus gene transfer occurs in
+% cells which have only one chloroplast, thus suggesting that perhaps
+% endosymbiotic gene donation can only occur following the degradation of
+% organelle membranes, a situation which would be detrimental to a cell
+% containing only one organelle copy. Researchers have also found that the
+% frequency of transfer increases when organelle membranes are disrupted
+% (i.e. increased temperature, freeze thawing, etc). This supports this idea
+% that gene transfer from organelles increases when the structural integrity
+% of the organelle membrane decreases, such as the programmed degeneration
+% of plastids during pollen-grain development \citep{TimmisEtAl2004}.
+
+The data collected from this study has demonstrated that organellar
+proteins have largely resisted the acquisition of low-complexity regions
+(LCRs) despite their integration into the nucleus, which has occurred over
+time resulting in organellar genome reduction. Future research should
+focus on the mechanisms by which organellar DNA becomes integrated into
+the nuclear genome, as well as why these genetic elements appear to have
+stayed true to their prokaryotic origin and resisted accumulation of
+low-complexity regions which are characteristic of nuclear proteins, and
+whether we can propose an evolutionary explanation for this phenomenon.
+
+
+\subsection*{Conclusions}
+
+\section*{Methods}
+
+Data from the human nuclear and mitochondrial proteome were downloaded
+from UniProtKB on 2025-4-21 (Proteome ID: UP000005640, UniProt
+Consortium, 2025).  The nuclear proteome consisted of 83374 proteins
+(20634 excluding isoforms) and the mitochondrial proteome contained
+13 proteins. Data from the \arab and \oryz nuclear, mitochondrial
+and chloroplast proteomes were downloaded from UniProtKB on 2025-6-3.
+They contained 39275 (27254 excluding isoforms), 114, 80 proteins and
+48897 (43525 excluding isoforms), 60, 83 proteins, respectively.
+
+To identify LCRs in these proteins we measured Shannon's entropy using the
+Seg program \citep{WootonFederhen1993}. The parameters
+for the Seg algorithm were adjusted to exclude small regions and select
+only larger ones as done in \citet{EnrightEtAl2023}; namely, a window length
+($W$) of 15, a trigger value ($K1$) of 1.9, and extension value ($K2$) of
+2.2. Seg was also run with a '-x' flag so that all low-complexity regions
+are represented with an `x', making it easy to write a python code to
+calculate the proportion of LCRs in each sequence by simply counting
+the number of x's and dividing by the total number of characters in
+the sequence.
+
+The nuclear proteins were categorized based on their sequence similarity
+to cyanobacterial or alpha-proteobacterial proteomes with an e-value
+threshold of $1 \times 10^{-10}$. Sequence homology was the main method
+used by \citet{MartinEtAl2002} to identify the potential origin of
+nuclear proteins.  The similarity of all of the nuclear proteins from
+each organism were compared against the proteomes of every `reference'
+cyanobacteria on UniProtKB ($n=224$), every `reference' alpha-proteobacteria
+($n=1505$), 6 prokaryotic `reference' proteomes, and the proteome of
+\textit{Saccharomyces cerevisiae} (Baker's Yeast).  Due to the large
+number of searches, similarity was evaluated using the \diamond program
+(using default parameters with the flag --outfmt 6; version 2.0.15;
+\cite{BuchfinkEtAl2015}).
+
+Each nuclear protein with a best hit to a cyanobacterial protein was
+categorized as potentially of cyanobacterial origin. Similarly, each
+nuclear proteins with a best hit to an alpha-proteobacterial protein was
+categorized as potentially of alpha-proteobacterial origin. All protein
+hits with an e-value greater than $1 \times 10^{-10}$, or with hits to
+other bacteria/eukaryotes were assumed to potentially be of 'native'
+nuclear origin.
+
+As an alternate method to classify the potential origin of proteins,
+we searched for the presence or absence of targeting peptides as
+predicted by \tget 2.0 and secondarily, as well as by their subcellular
+localization as annotated by UniProtKB. \tget 2.0 uses a neural network
+with a bidirectional long short-term memory (LSTM)--or a BiLSTM---and a
+multi-attention mechanism to make an accurate prediction of a protein's
+subcellular localization \citep{ArmenterosEtAl2019}. The neural network
+which was constructed to hold information for multiple steps, similar
+to the way a computer memory works, making it easy to train. The
+neural network is designed to include features of the surrounding
+environment of the targeting peptide to improve the prediction of
+transit peptide cleavage sites \citep{ArmenterosEtAl2019}. All nuclear
+proteins were ran through this program to attempt to determine their
+potential origin (chloroplast, mitochondria, or `native' nuclear). In
+addition, each protein's localization was extracted from the UniProtKB
+documentation. Proteins were classified as mitochondrial or chloroplast
+only if, only that location was stated. If more than one location was
+listed or if no location was listed, then that protein was treated
+as nuclear. A complete listing of each protein, their similarity
+e-value, \tget 2.0 probability, and UniProtKB annotation is given at
+https://github.com/gbgolding/some\_url\_to\_be \missing.
+
+The proportion of LCRs in each sequence categorization was analyzed to
+determine which protein types contain more or fewer LCRs. To evaluate if
+the distributions of LCR proportions in each category were significantly
+different we used two-sample Kolmogorov-Smirnov and Anderson-Darling
+tests.  In all cases, these tests indicated that the nuclear and
+organellar distributions are significantly different except for the
+UniProtKB annotations were sample sizes were too small.
+
+All of the LCR proportions corresponding to each protein type were
+compared, two at a time, using a Mann-Whitney U test to
+determine whether the two samples come from the same distribution. The R
+command wilcox.test was used to perform each test. The null hypothesis is
+that the two samples come from the same distribution, and the alternative
+hypothesis is that the distributions are two-sided. The null hypothesis
+is rejected when the p-value $<0.05$. The results are summarized
+in Table~\ref{tab:mannwhitney}. For each test, default parameters
+were used.
+
+
+\section*{Acknowledgements}
+We thank Natural Sciences and Engineering Research Counsel for funding
+for this project (grant RGPIN-202-05733 to GBG).
+
+\section*{Competing Interests}
+The authors declare they have no competing interests.
+
+\section*{Funding Statement}
+This research was supported by Natural Sciences and Engineering Research
+Counsel (grant RGPIN-202-05733 to GBG).
+
+\section*{Data Availability}
+The most up-to-date data, code, and supplemental information
+for this research is publicly available on \texttt{GitHub} at
+\textcolor{red}{\url{https://github.com/gbgolding/some_url_to_be}}
+
+\let\oldUrl\url
+\renewcommand{\url}[1]{\href{#1}{Link}}
+
+\small
+\printbibliography
+\normalsize
+\end{multicols}
+\newpage
+% \begin{multicols}{2}
+\section*{Supplementary Material}
+        \setcounter{table}{0}
+        \renewcommand{\thetable}{S\arabic{table}}
+        \setcounter{figure}{0}
+        \renewcommand{\thefigure}{S\arabic{figure}}
+        \setcounter{equation}{0}
+        \renewcommand{\theequation}{S\arabic{equation}}
+
+\begin{table*}[ht]
+    \caption{Fraction of Proteins with LCRs using \tget subcellular localization}
+    \label{tab:targetp}
+    \centering
+    \begin{tabular}{lcrrr}
+        \toprule
+        Protein Type & Fraction Proteins & \multicolumn{2}{c}{Proportion LCR} & $n$ \\
+                     & with LCRs         & Mean & SD &      \\
+        \midrule \multicolumn{2}{c}{\quad\quad\homo} &       & & \\
+        Nuclear        & 0.2367 & 0.0189 & 0.0600 & 20294 \\
+        Nuclear-mt        & 0.0556 & 0.0032 & 0.0147 & 342 \\
+        Mitochondria   & 0.1539 & 0.0068 & 0.0165 & 13 \\
+        \midrule \multicolumn{2}{c}{\quad\quad\arab} &      & & \\
+        Nuclear        & 0.1628 & 0.0148 & 0.0559 & 25941 \\
+        Nuclear-cp        & 0.1626 & 0.0112 & 0.0315 & 769 \\
+        Nuclear-mt        & 0.1187 & 0.0084 & 0.0340 & 573 \\
+        Chloroplast    & 0.0375 & 0.0026 & 0.0151 & 80 \\
+        Mitochondria   & 0.0351 & 0.0027 & 0.0166 & 114 \\
+        \midrule \multicolumn{2}{c}{\quad\quad\oryz} &     & & \\
+        Nuclear        & 0.2957 & 0.0375 & 0.0849 & 42195 \\
+        Nuclear-cp        & 0.4115 & 0.0340 & 0.0579 & 960 \\
+        Nuclear-mt        & 0.2513 & 0.0210 & 0.0493 & 374 \\
+        Chloroplast    & 0.0241 & 0.0022 & 0.0142 & 83 \\
+        Mitochondria   & 0.0500 & 0.0028 & 0.0158 & 60 \\
+        \bottomrule
+    \end{tabular}
+\end{table*}
+
+
+
+\newcommand{\location}{homo_targetp_lcrproportions}
+\newcommand{\nucNumber}{20294}
+\newcommand{\nucMitoNumber}{342}
+\newcommand{\mitoNumber}{13}
+\begin{figure*}[ht]
+    \caption{TargetP -- \homo}
+    \input{logplot3.tex}
+    \centering\parbox{0.9\textwidth}{\footnotesize Fraction of \homo
+    proteins with LCRs as per \tget 2.0.  The `Nuclear' group represents
+    proteins which had the greatest likelihood of being transported
+    to `other' regions of the cell (likelihood $>0.5$). The `Nuclear-mt'
+    proteins are nuclear proteins which had the greatest likelihood of
+    containing mitochondrial-targeting peptides (likelihood $>0.5$).  The
+    `Mito' group represents proteins encoded in the \homo mitochondria.}
+    \label{fig:histogramtargetphomo}
+\end{figure*}
+
+\renewcommand{\location}{arab_targetp_lcrproportions}
+\renewcommand{\nucNumber}{25941}
+\newcommand{\nucChloNumber}{769}
+\renewcommand{\nucMitoNumber}{573}
+\newcommand{\chloNumber}{80}
+\renewcommand{\mitoNumber}{114}
+\begin{figure*}[ht]
+    \caption{TargetP -- \arab}
+    \input{logplot.tex}
+    \centering\parbox{0.9\textwidth}{\footnotesize Fraction of \arab
+    proteins with LCRs as per \tget 2.0.  The `Nuclear' group represents
+    proteins which had the greates likelihood of being transported to
+    `other' regions of the cell (likelihood $>0.5$). `Nuclear-cp' proteins
+    are nuclear proteins which had the greatest likelihood of containing
+    chloroplast-targeting peptides (likelihood $>0.5$). The `Nuclear-mt'
+    proteins are nuclear proteins which had the greatest likelihood of
+    containing mitochondrial-targeting peptides (likelihood $>0.5$). The
+    groups `Chlo' and `Mito' represent proteins encoded in the \arab
+    chloroplast and mitochondria, respectively.}
+    \label{fig:histogramtargetparab}
+\end{figure*}
+
+\renewcommand{\location}{oryz_targetp_lcrproportions}
+\renewcommand{\nucNumber}{42195}
+\renewcommand{\nucChloNumber}{960}
+\renewcommand{\nucMitoNumber}{374}
+\renewcommand{\chloNumber}{83}
+\renewcommand{\mitoNumber}{60}
+\begin{figure*}[ht]
+    \caption{TargetP -- \oryz}
+    \input{logplot.tex}
+    \centering\parbox{0.9\textwidth}{\footnotesize Fraction of \oryz proteins
+    with LCRs as per \tget 2.0.  The `Nuclear' group represents proteins
+    which had the greates likelihood of being transported to `other'
+    regions of the cell (likelihood $>0.5$). `Nuclear-cp' proteins are
+    nuclear proteins which had the greatest likelihood of containing
+    chloroplast-targeting peptides (likelihood $>0.5$). The `Nuclear-mt'
+    proteins are nuclear proteins which had the greatest likelihood of
+    containing mitochondrial-targeting peptides (likelihood $>0.5$).
+    The groups `Chlo' and `Mito' represent proteins encoded in the \oryz
+    chloroplast and mitochondria, respectively.}
+    \label{fig:histogramtargetporyz}
+\end{figure*}
+
+\begin{table*}
+    \caption{Fraction of Proteins with LCRs using annotated subcellular localization}
+    \label{tab:sublocal}
+    \centering
+    \begin{tabular}{lcccr}
+        \toprule
+        Protein Type & Fraction Proteins & \multicolumn{2}{c}{Proportion LCR} & $n$ \\
+                     & with LCRs         & Mean & SD &      \\
+        \midrule \multicolumn{2}{c}{\quad\quad\homo} &       & & \\
+        Native Nuclear & 0.2498 & 0.0179 & 0.0499 & 16081 \\
+        Nuclear-mt  & 0.0879 & 0.0056 & 0.0217 & 1113 \\
+        Mitochondria   & 0.1538 & 0.0067 & 0.0165 & 13 \\
+        \midrule \multicolumn{2}{c}{\quad\quad\arab} &      & & \\
+        Native Nuclear & 0.1930 & 0.0155 & 0.0499 & 5554 \\
+        Nuclear-cp   & 0.2358 & 0.0190 & 0.0499 & 3456 \\
+        Nuclear-mt  & 0.1069 & 0.0087 & 0.0354 & 814 \\
+        Chloroplast    & 0.0380 & 0.0026 & 0.0152 & 79 \\
+        Mitochondria   & 0.0360 & 0.0028 & 0.0168 & 111 \\
+        \midrule \multicolumn{2}{c}{\quad\quad\oryz} &     & & \\
+        Native Nuclear & 0.3347 & 0.0291 & 0.0602 & 9618 \\
+        Nuclear-cp   & 0.3525 & 0.0231 & 0.0421 & 610 \\
+        Nuclear-mt  & 0.2588 & 0.0198 & 0.0428 & 371 \\
+        Chloroplast    & 0.0241 & 0.0022 & 0.0142 & 83 \\
+        Mitochondria   & 0.0500 & 0.0028 & 0.0158 & 60 \\
+        \bottomrule
+    \end{tabular}
+\end{table*}
+
+
+\renewcommand{\location}{homo_genbank_lcrproportions}
+\renewcommand{\nucNumber}{16081}
+\renewcommand{\nucMitoNumber}{1113}
+\renewcommand{\mitoNumber}{13}
+\begin{figure*}[ht]
+    \caption{UniProtKB -- \homo}
+    \input{logplot3.tex}
+    \centering\parbox{0.9\textwidth}{\footnotesize Fraction of \homo
+    with LCRs as per the UniProtKB annotation.  The `Nuclear' group represents
+    proteins annotated as nuclear/membrane/other. 
+    The `Nuclear-mt' proteins are nuclear proteins annotated as transported
+    to the mitochondria.  The `Mito' group represent proteins
+    encoded in the \homo mitochondria.}
+    \label{fig:histogramgenbankhomo}
+\end{figure*}
+
+\renewcommand{\location}{arab_genbank_lcrproportions}
+\renewcommand{\nucNumber}{5554}
+\renewcommand{\nucChloNumber}{3456}
+\renewcommand{\nucMitoNumber}{814}
+\renewcommand{\chloNumber}{79}
+\renewcommand{\mitoNumber}{111}
+\begin{figure*}[ht]
+    \caption{UniProtKB -- \arab}
+    \input{logplot.tex}
+    \centering\parbox{0.9\textwidth}{\footnotesize Fraction of \arab proteins
+    with LCRs as per the UniProtKB annotation.  The `Nuclear' group represents
+    proteins annotated as nuclear/cytoplasmic/membrane/other. `Nuclear-cp'
+    proteins are nuclear proteins annotated as transported to the chloroplast.
+    The `Nuclear-mt' proteins are nuclear proteins annotated as transported
+    to the mitochondria.  The groups `Chlo' and `Mito' represent proteins
+    encoded in the \arab chloroplast and mitochondria, respectively.}
+    \label{fig:histogramgenbankarab}
+\end{figure*}
+
+\renewcommand{\location}{oryz_genbank_lcrproportions}
+\renewcommand{\nucNumber}{9618}
+\renewcommand{\nucChloNumber}{610}
+\renewcommand{\nucMitoNumber}{371}
+\renewcommand{\chloNumber}{83}
+\renewcommand{\mitoNumber}{60}
+\begin{figure*}[ht]
+    \caption{UniProtKB -- \oryz}
+    \input{logplot.tex}
+    \centering\parbox{0.9\textwidth}{\footnotesize Fraction of \oryz proteins
+    with LCRs as per the UniProtKB annotation.  The `Nuclear' group represents
+    proteins annotated as nuclear/cytoplasmic/membrane/other. `Nuclear-cp'
+    proteins are nuclear proteins annotated as transported to the chloroplast.
+    The `Nuclear-mt' proteins are nuclear proteins annotated as transported
+    to the mitochondria.  The groups `Chlo' and `Mito' represent proteins
+    encoded in the \oryz chloroplast and mitochondria, respectively.}
+    \label{fig:histogramgenbankoryz}
+\end{figure*}
+
+\begin{table*}
+    \caption{The rates of decay for exponential curves fitted to Figures
+    \ref{fig:histogramtargetphomo}-\ref{fig:histogramgenbankoryz}.}
+    \label{tab:decay2}
+    \centering
+    % \begin{tabular}{lr@{\;$\pm$\;}l} % the @ aligns on, the \; adds some white space
+    \begin{tabular}{lll>{\quad}rcl>{\quad}rcl}    % this fudge works better
+        \toprule
+        Method & \multicolumn{2}{c}{Grouping} & \multicolumn{3}{c}{Decay rate $\pm$ StdErr}  & \multicolumn{3}{c}{Mean difference $\pm$ StdErr} \\
+        \cmidrule(lr){1-9}
+        TargetP results & Human & Nuclear    &  -4.57  & $\pm$ &    0.28 & -0.40 & $\pm$ & 0.04\\
+                        &       & Nuclear-mt & \multicolumn{3}{c}{Did not converge}  & 5.79 & $\pm$ & 0.05\\
+                        & Arab. & Nuclear    &  -4.15 & $\pm$ & 0.30 & -0.47 & $\pm$ & 0.04\\
+                        &       & Nuclear-mt & -21.16 & $\pm$ & 3.09 &  1.40 & $\pm$ & 0.05\\
+                        &       & Nuclear-cp & -10.96 & $\pm$ & 3.54 & -3.01 & $\pm$ & 0.05\\
+                        & Oryza & Nuclear    &  -1.39 & $\pm$ & 0.16 & -0.09 & $\pm$ & 0.04\\
+                        &       & Nuclear-mt & -12.39 & $\pm$ & 3.32 &  0.83 & $\pm$ & 0.05\\
+                        &       & Nuclear-cp &  -5.98 & $\pm$ & 1.08 &  1.02 & $\pm$ & 0.04\\
+        \cmidrule(lr){1-9}
+        UniProtKB annotation & Human & Nuclear    &  -4.47 & $\pm$ & 0.23 &  0.70 & $\pm$ & 0.08\\
+                             &       & Nuclear-mt & -14.21 & $\pm$ & 5.11 &  4.37 & $\pm$ & 0.10\\
+                             & Arab. & Nuclear    &  -6.73 & $\pm$ & 0.50 &  0.01 & $\pm$ & 0.07\\
+                             &       & Nuclear-mt & -27.42 & $\pm$ & 5.27 &  2.11 & $\pm$ & 0.09\\
+                             &       & Nuclear-cp &  -6.88 & $\pm$ & 0.69 & -4.13 & $\pm$ & 0.11\\
+                             & Oryza & Nuclear    &  -3.64 & $\pm$ & 0.27 &  1.24 & $\pm$ & 0.11\\
+                             &       & Nuclear-mt & -21.41 & $\pm$ & 9.72 &  0.35 & $\pm$ & 0.06\\
+                             &       & Nuclear-cp &  -8.59 & $\pm$ & 1.84 & -0.85 & $\pm$ & 0.08\\
+        \bottomrule
+    \end{tabular}
+\end{table*}
+
+% \end{multicols}
+\end{document}
+
+\begin{figure*}[ht]
+    \centering
+    \includegraphics[width=1.0\textwidth]{fractionblastp.pdf}
+    \caption{Fraction of Proteins with LCRs per \diamond similarity
+    result.  The `Nuclear' group (n=29785) represents nuclear proteins
+    which did not hit with any cyanobacterial or alpha-proteobacterial
+    proteins. `Nuclear-cp' proteins (n=3793) are nuclear \ath proteins
+    with hits to a cyanobacterial proteome, after filtering out any hits
+    with an e-value $> 1e-10$. The `Nuclear-mt' proteins (n=3883) are
+    nuclear \ath proteins with hits to a alpha-proteobacterial proteome.
+    The groups `Chloroplast' (n=79) and `Mitochondria' (n=111) represent
+    proteins encoded in the \textit{Arabidopsis thaliana} chloroplast
+    and mitochondria, respectively.} \label{fig:histogramblastp}
+\end{figure*}
+
+\begin{figure*}[ht]
+    \centering
+    \includegraphics[width=1.0\textwidth]{meanblastp.pdf}
+    \caption{``Mean LCR Proportion per Protein Type Determined by \diamond
+    similarity Results" is a bar graph portraying the mean proportions of
+    low-complexity regions (LCRs) in each type of protein as determined by
+    sequence similarity through \diamond similarity.  LCR proportions were
+    measured by calculating the proportion of x's in the Seg output for
+    each protein sequence, and calculating the mean of these proportions
+    corresponding to each protein type. The groups ``Chloroplast"
+    (n=79) and ``Mitochondria" (n=111) represent proteins encoded in the
+    \textit{Arabidopsis thaliana} chloroplast and mitochondria, respectively,
+    and act as control groups. The ``Native Nuclear" group (n=29785)
+    represents nuclear proteins which did not hit with any cyanobacterial or
+    alpha-proteobacterial proteins. ``Nuclear-cp" proteins (n=3793) are
+    nuclear \ath proteins whose best \diamond similarity hit belonged to a
+    cyanobacterial proteome, after filtering out all hits with an e-value $>
+    1e-10$. The ``Nuclear-mt" proteins (n=3883) are nuclear \ath proteins
+    whose best \diamond similarity hit belonged to an alpha-proteobacterial
+    proteome. The error bars represent the standard error of the mean.}
+    \label{fig:meanblastp}
+\end{figure*}
+
+\begin{figure*}[ht]
+    \centering
+    \includegraphics[width=1.0\textwidth]{fractiontargetp.pdf}
+    \caption{``Fraction of Proteins with an LCR per Protein Type as Determined
+    by \tget Localization" is a bar graph portraying the fraction of proteins,
+    per protein type as determined by \tget 2.0 localization, which contain
+    low-complexity regions (LCRs). The groups ``Chloroplast" (n=79) and
+    ``Mitochondria" (n=11) represent proteins encoded in the chloroplast
+    and mitochondria of \textit{Arabidopsis thaliana}, and act as control
+    groups. ``Native Nuclear" (n=35597) represents nuclear-encoded \ath
+    proteins without chloroplast or mitochondrial targeting peptides,
+    while the groups ``NuclearCyan" (n=2014)  and ``NuclearAlpha"
+    (n=1513) represents proteins with chloroplast-targeting peptides
+    (cTPs) and mitochondrial-targeting peptides (mTPs), respectively.}
+    \label{fig:fractiontargetP}
+\end{figure*}
+
+\begin{figure*}[ht]
+    \centering
+    \includegraphics[width=1.0\textwidth]{meantargetp.pdf}
+    \caption{``Mean LCR Proportion per Protein Type as Determined by
+    \tget Localization" is a bar graph portraying the mean proportions of
+    low-complexity regions (LCRs) in each protein type as determined by
+    \tget 2.0 localizations. LCR proportions were measured by calculating
+    the proportion of x's in the Seg output for each protein sequence,
+    and calculating the mean of these proportions corresponding to each
+    protein type. The groups ``Chloroplast" (n=79) and ``Mitochondria"
+    (n=111) represent proteins encoded in the \textit{Arabidopsis thaliana}
+    chloroplast and mitochondria, respectively, and act as control groups.
+    ``Native Nuclear" (n=35597) represents nuclear-encoded \ath proteins
+    without chloroplast or mitochondrial targeting peptides, while the groups
+    ``NuclearCyan" (n=2014)  and ``NuclearAlpha" (n=1513) represents proteins
+    with chloroplast-targeting peptides (cTPs) and mitochondrial-targeting
+    peptides (mTPs), respectively. The error bars represent the standard
+    error of the mean.} 
+    \label{fig:meantargetP} 
+\end{figure*}
+
+ 
+\begin{figure*}[ht]
+    \centering
+    \includegraphics[width=1.0\textwidth]{r_fraction_genbank.png}
+    \caption{``Fraction of Proteins with an LCR per Protein Type as Determined
+    by GenBank Localization" is a bar graph portraying the fraction of
+    proteins, per protein type as determined by GenBank localization data,
+    which contains low-complexity regions (LCRs). The groups ``Chloroplast"
+    (n=79) and ``Mitochondria" (n=11) represent proteins encoded in the
+    chloroplast and mitochondria of \textit{Arabidopsis thaliana}, and act
+    as control groups. ``Native Nuclear" (n=5554) represents nuclear-encoded
+    \ath proteins which are localized to either the nucleus, cytoplasm, or
+    ``other" regions of the cell, while the groups ``Nuclear-CP" (n=3456)
+    and ``Nuclear-MT" (n=814) represents proteins which are localized to
+    the chloroplast and the mitochondria, respectively.}
+    \label{fig:fractiongenbank}
+\end{figure*}
+
+
+\begin{figure*}[ht]
+
+    \centering
+    \includegraphics[width=1.0\textwidth]{r_mean_genbank.png}
+    \caption{``Mean LCR Proportion per Protein Type as Determined by
+    GenBank Localization" is a bar graph portraying the mean proportion
+    of low-complexity regions (LCRs) per protein type as determined by
+    GenBank localizations. LCR proportions were measured by calculating
+    the proportion of x's in the Seg output for each protein sequence,
+    and calculating the mean of these proportions corresponding to each
+    protein type. The groups ``Chloroplast" (n=79) and ``Mitochondria"
+    (n=11) represent proteins encoded in the chloroplast and mitochondria
+    of \textit{Arabidopsis thaliana}, and act as control groups. ``Native
+    Nuclear" (n=5554) represents nuclear-encoded \ath proteins which are
+    localized to either the nucleus, cytoplasm, or ``other" regions of
+    the cell, while the groups ``Nuclear-CP" (n=3456)  and ``Nuclear-MT"
+    (n=814) represents proteins which are localized to the chloroplast and
+    the mitochondria, respectively. The error bars show the standard error
+    of the mean.} 
+    \label{fig:meangenbank}
+\end{figure*}
